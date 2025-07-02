@@ -5,6 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +16,10 @@ import { JoiValidationSchema } from './config/joi.validation';
       validationSchema: JoiValidationSchema,
     }),
     MongooseModule.forRoot(process.env.MONGODB!),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
