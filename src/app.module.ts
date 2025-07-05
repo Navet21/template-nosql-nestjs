@@ -8,6 +8,8 @@ import { JoiValidationSchema } from './config/joi.validation';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { AuthModule } from './auth/auth.module';
       rootPath: join(__dirname, '..', 'public'),
     }),
     AuthModule,
+    UsersModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
