@@ -7,8 +7,10 @@ import {
 import { CreateUserDto, UpdateUserDto } from 'src/auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/auth/entities/user.schema';
-import { isValidObjectId, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { PaginationDto } from 'src/common/pagination.dto';
+import * as bcrypt from 'bcrypt';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +21,13 @@ export class UsersService {
 
   //Create User by Admin
   async create(createUserDto: CreateUserDto) {
-    // TODO: Encriptar pass cuando haga auth.
     createUserDto.email = createUserDto.email.toLowerCase();
-
+    const { password, ...userData } = createUserDto;
     try {
-      const user = await this.userModel.create(createUserDto);
+      const user = await this.userModel.create({
+        ...userData,
+        password: bcrypt.hashSync(password, 10),
+      });
       return user;
     } catch (error: any) {
       console.error(error);
@@ -40,16 +44,16 @@ export class UsersService {
       .find()
       .limit(limit)
       .skip(offset)
-      .select('-__v');
+      .select('-__v _id');
     return users;
   }
 
   //Find User by email or id
   async findOne(term: string) {
     let user: User | null = null;
-    //MongoId
-    if (!user && isValidObjectId(term)) {
-      user = await this.userModel.findById(term);
+    //Uuid
+    if (!user && isUUID(term)) {
+      user = await this.userModel.findOne({ uuid: term });
     }
     //Email
     if (!user) {
@@ -79,11 +83,16 @@ export class UsersService {
 
   //Delete User
   async remove(id: string) {
-    const { deletedCount } = await this.userModel.deleteOne({ _id: id });
+    const { deletedCount } = await this.userModel.deleteOne({ uuid: id });
 
     if (deletedCount === 0) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
     return `User with id ${id} successfully deleted.`;
+  }
+
+  //Delete all Users
+  async deleteAllUsers(){
+    await this.userModel.deleteMany();
   }
 }

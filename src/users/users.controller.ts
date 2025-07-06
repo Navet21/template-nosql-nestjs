@@ -7,13 +7,16 @@ import {
   Delete,
   Patch,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from 'src/auth/dto';
-import { ParseMongoIdPipPipe } from 'src/common/pipes/parse-mongo-id-pip/parse-mongo-id-pip.pipe';
 import { PaginationDto } from 'src/common/pagination.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { ValidRoles } from 'src/auth/interfaces';
 
 @Controller('users')
+//@Auth(ValidRoles.admin)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -38,7 +41,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseMongoIdPipPipe) id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);
   }
 }
