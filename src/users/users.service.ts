@@ -8,6 +8,7 @@ import { CreateUserDto, UpdateUserDto } from 'src/auth/dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/auth/entities/user.schema';
 import { isValidObjectId, Model } from 'mongoose';
+import { PaginationDto } from 'src/common/pagination.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,7 @@ export class UsersService {
 
   //Create User by Admin
   async create(createUserDto: CreateUserDto) {
+    // TODO: Encriptar pass cuando haga auth.
     createUserDto.email = createUserDto.email.toLowerCase();
 
     try {
@@ -31,8 +33,15 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  //Find all Users Paginated
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = 5, offset = 0 } = paginationDto;
+    const users = await this.userModel
+      .find()
+      .limit(limit)
+      .skip(offset)
+      .select('-__v');
+    return users;
   }
 
   //Find User by email or id
@@ -62,6 +71,9 @@ export class UsersService {
       return { ...user.toJSON(), ...updateUserDto };
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException(
+        `Can't create User - Check server logs`,
+      );
     }
   }
 
@@ -72,5 +84,6 @@ export class UsersService {
     if (deletedCount === 0) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
+    return `User with id ${id} successfully deleted.`;
   }
 }

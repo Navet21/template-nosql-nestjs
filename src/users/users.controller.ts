@@ -6,10 +6,12 @@ import {
   Param,
   Delete,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from 'src/auth/dto';
 import { ParseMongoIdPipPipe } from 'src/common/pipes/parse-mongo-id-pip/parse-mongo-id-pip.pipe';
+import { PaginationDto } from 'src/common/pagination.dto';
 
 @Controller('users')
 export class UsersController {
@@ -21,8 +23,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() queryParameters: PaginationDto) {
+    return this.usersService.findAll(queryParameters);
   }
 
   @Get(':term')
