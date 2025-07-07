@@ -16,7 +16,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { ValidRoles } from 'src/auth/interfaces';
 
 @Controller('users')
-//@Auth(ValidRoles.admin)
+@Auth(ValidRoles.admin)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
