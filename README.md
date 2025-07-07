@@ -5,22 +5,23 @@
 #Template NestJs with MONGODB
 
 1. Install Dependencies
-2.```bun install```
-3. Clone the .env.template file and rename it to .env
+```
+bun install
+```
+2. Clone the .env.template file and rename it to .env
 ```
 cp .env.template .env
 ```
-4. Change the environment variables
-5. Bring up the database
+3. Change the environment variables
+4. Bring up the database
 ```
 docker-compose up -d
 ```
-6. Start the app in development mode:
+5. Start the app in development mode:
 ```
 bun start:dev
 ```
-
-7. Run Seed
+6. Run Seed
 ```
 localhost:3000/api/templateNestJs/seed/
 ```
